@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, DragEvent, ChangeEvent } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Article } from '../types';
 import { fetchArticle, createArticle, updateArticle, uploadImage } from '../api';
 import Toast from './Toast';
 
