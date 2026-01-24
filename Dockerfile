@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim As build
+FROM node:20-bookworm-slim AS build
 
 WORKDIR /usr/src/app
 
@@ -6,11 +6,14 @@ COPY package*.json package-lock.json ./
 
 RUN npm ci 
 
+# Fix permissions for node_modules binaries
+RUN chmod -R +x node_modules/.bin/
+
 COPY ./ ./
 
 RUN npm run build
 
-FROM nginx:stable-alpine as production
+FROM nginx:stable-alpine AS production
 
 # Copy custom entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
