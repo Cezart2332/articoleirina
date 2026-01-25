@@ -44,6 +44,15 @@ export default function ArticlesList() {
     });
   }
 
+  const groupedArticles = articles.reduce<Record<string, Article[]>>((acc, article) => {
+    const category = article.category || 'General';
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(article);
+    return acc;
+  }, {});
+
+  const sortedCategories = Object.keys(groupedArticles).sort((a, b) => a.localeCompare(b, 'ro'));
+
   if (loading) {
     return (
       <div className="loading">
@@ -74,32 +83,47 @@ export default function ArticlesList() {
         </div>
       ) : (
         <div className="articles-grid">
-          {articles.map(article => (
-            <div key={article.id} className="article-card">
-              {article.imageUrl ? (
-                <img src={article.imageUrl} alt={article.title} className="article-image" />
-              ) : (
-                <div className="article-image-placeholder">📷</div>
-              )}
-              <div className="article-content">
-                <h3 className="article-title">{article.title}</h3>
-                <p className="article-excerpt">
-                  {article.excerpt || article.content.substring(0, 100)}...
-                </p>
-                <div className="article-meta">
-                  <span>{formatDate(article.createdAt)}</span>
-                  <span className={`article-status ${article.published ? 'published' : 'draft'}`}>
-                    {article.published ? 'Publicat' : 'Draft'}
-                  </span>
-                </div>
-              </div>
-              <div className="article-actions">
-                <Link to={`/edit/${article.id}`} className="btn btn-secondary">
-                  ✏️ Editează
-                </Link>
-                <button onClick={() => handleDelete(article.id)} className="btn btn-danger">
-                  🗑️ Șterge
-                </button>
+          {sortedCategories.map((category) => (
+            <div key={category} style={{ gridColumn: '1 / -1' }}>
+              <h2 style={{ marginBottom: '12px' }}>{category}</h2>
+              <div className="articles-grid">
+                {groupedArticles[category]
+                  .slice()
+                  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                  .map(article => (
+                    <div key={article.id} className="article-card">
+                      {article.imageUrl ? (
+                        <img src={article.imageUrl} alt={article.title} className="article-image" />
+                      ) : (
+                        <div className="article-image-placeholder">📷</div>
+                      )}
+                      <div className="article-content">
+                        <div style={{ marginBottom: '8px' }}>
+                          <span style={{ fontSize: '11px', padding: '3px 8px', backgroundColor: '#f0f0f0', borderRadius: '4px' }}>
+                            {article.category || 'General'}
+                          </span>
+                        </div>
+                        <h3 className="article-title">{article.title}</h3>
+                        <p className="article-excerpt">
+                          {article.excerpt || article.content.substring(0, 100)}...
+                        </p>
+                        <div className="article-meta">
+                          <span>{formatDate(article.createdAt)}</span>
+                          <span className={`article-status ${article.published ? 'published' : 'draft'}`}>
+                            {article.published ? 'Publicat' : 'Draft'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="article-actions">
+                        <Link to={`/edit/${article.id}`} className="btn btn-secondary">
+                          ✏️ Editează
+                        </Link>
+                        <button onClick={() => handleDelete(article.id)} className="btn btn-danger">
+                          🗑️ Șterge
+                        </button>
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
           ))}

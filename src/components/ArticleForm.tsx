@@ -16,6 +16,7 @@ export default function ArticleForm() {
     excerpt: '',
     imageUrl: '',
     author: 'Irina Gospodaru',
+    category: 'General',
     published: false
   });
   const [loading, setLoading] = useState(false);
@@ -40,6 +41,7 @@ export default function ArticleForm() {
         excerpt: article.excerpt,
         imageUrl: article.imageUrl,
         author: article.author,
+        category: article.category || 'General',
         published: article.published
       });
     } catch {
@@ -202,6 +204,18 @@ export default function ArticleForm() {
             value={form.excerpt}
             onChange={handleChange}
             placeholder="O scurtă descriere a articolului"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="category">Categorie</label>
+          <input
+            type="text"
+            id="category"
+            name="category"
+            value={form.category}
+            onChange={handleChange}
+            placeholder="ex: Dezvoltare Personală, Relații, Carieră..."
           />
         </div>
 

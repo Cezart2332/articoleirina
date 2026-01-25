@@ -6,6 +6,7 @@ export interface Article {
   excerpt: string;
   imageUrl: string;
   author: string;
+  category: string;
   published: boolean;
   createdAt: string;
   updatedAt: string;
