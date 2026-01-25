@@ -1,6 +1,6 @@
 import { Article, UploadResponse } from './types';
 
-const API_BASE = 'http://localhost:3001';
+const API_BASE = 'https://apiirina.duckdns.org';
 
 export async function fetchArticles(): Promise<Article[]> {
   const response = await fetch(`${API_BASE}/api/articles`);
