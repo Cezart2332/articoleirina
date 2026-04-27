@@ -1,8 +1,23 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Article } from '../types';
 import { fetchArticles, deleteArticle } from '../api';
 import Toast from './Toast';
+import { FiEdit2, FiPlus, FiTrash2, FiFileText, FiImage } from 'react-icons/fi';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Chip,
+  CircularProgress,
+  Grid,
+  Typography,
+  Paper,
+  IconButton
+} from '@mui/material';
 
 export default function ArticlesList() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -55,79 +70,111 @@ export default function ArticlesList() {
 
   if (loading) {
     return (
-      <div className="loading">
-        <div className="spinner"></div>
-      </div>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+        <CircularProgress color="primary" />
+      </Box>
     );
   }
 
   return (
-    <>
-      <header className="header">
-        <h1>📝 Admin Articole</h1>
-        <div className="header-actions">
-          <Link to="/new" className="btn btn-primary">
-            ➕ Articol Nou
-          </Link>
-        </div>
-      </header>
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, p: 3, bgcolor: 'rgba(47, 119, 186, 0.08)', borderRadius: 2, border: 1, borderColor: 'divider' }}>
+        <Typography variant="h4" component="h1" sx={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', color: 'text.primary' }}>
+          <FiFileText style={{ marginRight: '12px', color: '#2F77BA' }} /> Admin Articole
+        </Typography>
+        <Button
+          component={Link}
+          to="/new"
+          variant="contained"
+          color="secondary"
+          startIcon={<FiPlus />}
+        >
+          Articol Nou
+        </Button>
+      </Box>
 
       {articles.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">📄</div>
-          <h3>Niciun articol încă</h3>
-          <p>Creează primul articol pentru a începe.</p>
-          <Link to="/new" className="btn btn-primary" style={{ marginTop: '20px' }}>
-            ➕ Creează Articol
-          </Link>
-        </div>
+        <Paper sx={{ p: 5, textAlign: 'center', bgcolor: 'transparent', border: '1px dashed', borderColor: 'warning.main' }} elevation={0}>
+          <FiFileText size={48} color="#A57B37" />
+          <Typography variant="h5" sx={{ mt: 2, mb: 1 }}>Niciun articol încă</Typography>
+          <Typography color="text.secondary" sx={{ mb: 3 }}>Creează primul articol pentru a începe.</Typography>
+          <Button component={Link} to="/new" variant="contained" color="primary" startIcon={<FiPlus />}>
+            Creează Articol
+          </Button>
+        </Paper>
       ) : (
-        <div className="articles-grid">
+        <Box>
           {sortedCategories.map((category) => (
-            <div key={category} style={{ gridColumn: '1 / -1' }}>
-              <h2 style={{ marginBottom: '12px' }}>{category}</h2>
-              <div className="articles-grid">
+            <Box key={category} sx={{ mb: 6 }}>
+              <Typography variant="h4" sx={{ fontWeight: 'semibold', mb: 2, color: 'success.main' }}>
+                {category}
+              </Typography>
+              <Grid container spacing={3}>
                 {groupedArticles[category]
-                  .slice()
-                  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                   .map(article => (
-                    <div key={article.id} className="article-card">
-                      {article.imageUrl ? (
-                        <img src={article.imageUrl} alt={article.title} className="article-image" />
-                      ) : (
-                        <div className="article-image-placeholder">📷</div>
-                      )}
-                      <div className="article-content">
-                        <div style={{ marginBottom: '8px' }}>
-                          <span style={{ fontSize: '11px', padding: '3px 8px', backgroundColor: '#f0f0f0', borderRadius: '4px' }}>
-                            {article.category || 'General'}
-                          </span>
-                        </div>
-                        <h3 className="article-title">{article.title}</h3>
-                        <p className="article-excerpt">
-                          {article.excerpt || article.content.substring(0, 100)}...
-                        </p>
-                        <div className="article-meta">
-                          <span>{formatDate(article.createdAt)}</span>
-                          <span className={`article-status ${article.published ? 'published' : 'draft'}`}>
-                            {article.published ? 'Publicat' : 'Draft'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="article-actions">
-                        <Link to={`/edit/${article.id}`} className="btn btn-secondary">
-                          ✏️ Editează
-                        </Link>
-                        <button onClick={() => handleDelete(article.id)} className="btn btn-danger">
-                          🗑️ Șterge
-                        </button>
-                      </div>
-                    </div>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={article.id}>
+                      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper', border: 1, borderColor: 'divider' }} elevation={0}>
+                        {article.imageUrl ? (
+                          <CardMedia
+                            component="img"
+                            height="200"
+                            image={article.imageUrl}
+                            alt={article.title}
+                          />
+                        ) : (
+                          <Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'rgba(61, 93, 122, 0.10)' }}>
+                            <FiImage size={48} color="#3D5D7A" />
+                          </Box>
+                        )}
+                        <CardContent sx={{ flexGrow: 1 }}>
+                          <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <Chip label={article.category || 'General'} size="small" color="info" variant="outlined" />
+                            <Chip 
+                              label={article.published ? 'Publicat' : 'Draft'} 
+                              size="medium" 
+                              color={article.published ? 'secondary' : 'warning'}
+                              variant={article.published ? 'filled' : 'outlined'}
+                            />
+                          </Box>
+                          <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold' }} gutterBottom>
+                            {article.title}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {article.excerpt || article.content.substring(0, 100)}...
+                          </Typography>
+                        </CardContent>
+                        <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            {formatDate(article.createdAt)}
+                          </Typography>
+                          <Box>
+                            <Button 
+                              component={Link} 
+                              to={"/edit/"+article.id} 
+                              size="small" 
+                              startIcon={<FiEdit2 />}
+                              sx={{ mr: 1 }}
+                              variant="outlined"
+                              color="info"
+                            >
+                              Editează
+                            </Button>
+                            <IconButton 
+                              size="small" 
+                              color="warning" 
+                              onClick={() => handleDelete(article.id)}
+                            >
+                              <FiTrash2 />
+                            </IconButton>
+                          </Box>
+                        </CardActions>
+                      </Card>
+                    </Grid>
                   ))}
-              </div>
-            </div>
+              </Grid>
+            </Box>
           ))}
-        </div>
+        </Box>
       )}
 
       {toast && (
@@ -137,6 +184,6 @@ export default function ArticlesList() {
           onClose={() => setToast(null)}
         />
       )}
-    </>
+    </Box>
   );
 }

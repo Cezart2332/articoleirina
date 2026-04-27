@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Snackbar, Alert } from '@mui/material';
 
 interface ToastProps {
   message: string;
@@ -7,14 +7,28 @@ interface ToastProps {
 }
 
 export default function Toast({ message, type, onClose }: ToastProps) {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 3000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
+  const backgroundColor = type === 'success' ? 'success.main' : 'error.main';
 
   return (
-    <div className={`toast ${type}`}>
-      {type === 'success' ? '✅' : '❌'} {message}
-    </div>
+    <Snackbar
+      open={true}
+      autoHideDuration={3000}
+      onClose={onClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <Alert
+        onClose={onClose}
+        severity={type}
+        variant="filled"
+        sx={{
+          width: '100%',
+          bgcolor: backgroundColor,
+          color: '#FFFFFF',
+          '& .MuiAlert-icon': { color: '#FFFFFF' },
+        }}
+      >
+        {message}
+      </Alert>
+    </Snackbar>
   );
 }
