@@ -1,6 +1,10 @@
 import { Article, UploadResponse } from './types';
 
-const API_BASE = 'https://apiirina.duckdns.org';
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+const API_BASE = (
+  configuredApiUrl ||
+  (import.meta.env.DEV ? 'http://localhost:3001' : 'VITE_API_URL_PLACEHOLDER')
+).replace(/\/$/, '');
 
 export async function fetchArticles(): Promise<Article[]> {
   const response = await fetch(`${API_BASE}/api/articles`);

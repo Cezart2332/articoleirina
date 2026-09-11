@@ -15,6 +15,8 @@ RUN npm run build
 
 FROM nginx:stable-alpine AS production
 
+ENV VITE_API_URL=https://apiirina.duckdns.org
+
 # Copy custom entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
